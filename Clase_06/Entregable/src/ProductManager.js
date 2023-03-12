@@ -117,10 +117,10 @@ class ProductManager {
 export default ProductManager
 
 //   TESTEO
-/*
+
 let manager = new ProductManager('./productos.json')
 
-tester = async () => {
+const tester = async() => {
 
     console.log("Inicio de ejecucion, estado de lista:\n", await manager.getProducts())
 
@@ -151,9 +151,79 @@ tester = async () => {
         stock: 75
     }
 
+    let producto4 = {
+        title: "Producto 4",
+        desc: "Este es un prodcuto de prueba",
+        price: 600,
+        thumbnail: "",
+        code: "7894126",
+        stock: 75
+    }
+
+    let producto5 = {
+        title: "Producto 5",
+        desc: "Este es un prodcuto de prueba",
+        price: 5500,
+        thumbnail: "",
+        code: "78945556",
+        stock: 755
+    }
+
+    let producto6 = {
+        title: "Producto 6",
+        desc: "Este es un prodcuto de prueba",
+        price: 6660,
+        thumbnail: "",
+        code: "7866",
+        stock: 7556
+    }
+
+    let producto7 = {
+        title: "Producto 7",
+        desc: "Este es un prodcuto de prueba",
+        price: 77770,
+        thumbnail: "",
+        code: "787766",
+        stock: 75576
+    }
+    
+    let producto8 = {
+        title: "Producto 8",
+        desc: "Este es un prodcuto de prueba",
+        price: 80,
+        thumbnail: "",
+        code: "88",
+        stock: 86
+    }
+
+    let producto9 = {
+        title: "Producto 9",
+        desc: "Este es un prodcuto de prueba",
+        price: 999,
+        thumbnail: "",
+        code: "951564",
+        stock: 9
+    }
+
+    let producto10 = {
+        title: "Producto 10",
+        desc: "Este es un prodcuto de prueba",
+        price: 9199,
+        thumbnail: "",
+        code: "95111564",
+        stock: 19
+    }
+
     await manager.addProduct(producto1)
     await manager.addProduct(producto2)
     await manager.addProduct(producto3)
+    await manager.addProduct(producto4)
+    await manager.addProduct(producto5)
+    await manager.addProduct(producto6)
+    await manager.addProduct(producto7)
+    await manager.addProduct(producto8)
+    await manager.addProduct(producto9)
+    await manager.addProduct(producto10)
 
     console.log("Verificamos la correcta carga de los productos:\n", await manager.getProducts())
 
@@ -179,4 +249,3 @@ tester = async () => {
 
 tester()
 
-*/

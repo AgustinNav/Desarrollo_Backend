@@ -117,7 +117,7 @@ class ProductManager {
 export default ProductManager
 
 //   TESTEO
-
+/*
 let manager = new ProductManager('./productos.json')
 
 const tester = async() => {
@@ -248,4 +248,4 @@ const tester = async() => {
 }
 
 tester()
-
+*/

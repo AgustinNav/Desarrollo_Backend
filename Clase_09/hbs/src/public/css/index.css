@@ -1,0 +1,9 @@
+h1{
+    color: blueviolet;
+    text-shadow: rgb(15, 15, 94) 2px 2px;
+}
+
+li{
+    color: gold;
+    text-shadow: 2px 2px black;
+}

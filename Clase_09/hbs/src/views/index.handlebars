@@ -1,0 +1,21 @@
+<div>
+
+    <h1>Hola {{user.name}} {{user.last_name}}, este es el index!</h1>
+
+    {{#if isAdmin}}
+    <ul>
+
+        {{#each food}}
+        <li>Nombre: {{this.name}} \|/ Precio: {{this.price}}</li>
+        {{/each}}
+
+    </ul>
+
+    {{else}}
+
+    <h2>No tienes permisos para ver este listado de comidas</h2>
+
+    {{/if}}
+
+</div>
+<script src="../public/js/index.js"></script>

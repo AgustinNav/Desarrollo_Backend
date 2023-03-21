@@ -11,6 +11,11 @@ const namefileProducts = filepath + "/productos.json"
 let carts = []
 let lastId = 0
 
+function MyMiddleWare(req, res, next) {
+    console.log("Llamando a MyMiddleWare");
+    next()
+}
+
 if (!fs.existsSync(namefileCart)) {
     fs.writeFileSync(namefileCart, "[]")
 } else {
@@ -25,7 +30,7 @@ if (!fs.existsSync(namefileCart)) {
     })()
 }
 
-router.post('/', async (req, res) => {
+router.post('/', MyMiddleWare, async (req, res) => {
 
     try {
 
@@ -51,13 +56,13 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.get('/:cId', async (req, res) => {
+router.get('/:cId', MyMiddleWare, async (req, res) => {
 
     try {
 
         carts = JSON.parse(await fs.promises.readFile(namefileCart, "utf-8"))
 
-        if (!(carts.length <= 0)) {
+        if (!(carts.length >= 0)) {
             res.send("El carrito se encuentra vacio.")
         } else {
             const cart = carts.find((c) => c.idC == req.params.cId)

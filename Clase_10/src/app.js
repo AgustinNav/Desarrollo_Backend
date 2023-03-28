@@ -35,5 +35,18 @@ const socketServer = new Server(httpServer)
 
 // Abrimos el canal de comunicacions
 socketServer.on('connection', socket => {
+
     console.log("Nuevo cliente conectado!");
+
+    // Escuchamos al cliente
+    socketServer.on('message', data => {
+        console.log(data);
+    })
+
+    socket.emit('message_2', 'Mensaje enviado desde el bakc!')
+
+    socket.broadcast.emit("evento_para_todos_excepto_socket_actual", "Este evento es para todos los sockets, menos el socket desde que se emitio el mensaje!")
+
+    socket.emit("evento_para_todos", "Evento para todos los Sockets!")
+
 })

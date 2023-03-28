@@ -1,191 +1,170 @@
 import { Router } from 'express'
 import _dirname from '../../utils.js'
-
-import fs from 'fs'
+import CartManager from '../../CartManager.js'
 
 const router = Router()
-const filepath = _dirname + "/src/files"
-const namefileCart = filepath + "/carrito.json"
-const namefileProducts = filepath + "/productos.json"
-
-let carts = []
-let lastId = 0
+const manager = new CartManager()
 
 function MyMiddleWare(req, res, next) {
-    console.log("Llamando a MyMiddleWare");
+    //console.log("Llamando a MyMiddleWare");
     next()
 }
 
-if (!fs.existsSync(namefileCart)) {
-    fs.writeFileSync(namefileCart, "[]")
-} else {
-
-    (async () => {
-
-        carts = JSON.parse(await fs.promises.readFile(namefileCart, "utf-8"))
-
-        let lastCart = carts[carts.length - 1]
-        if (lastCart) lastId = lastCart.idC
-
-    })()
-}
+// CREA CARRITO
 
 router.post('/', MyMiddleWare, async (req, res) => {
 
     try {
 
-        carts = JSON.parse(await fs.promises.readFile(namefileCart, "utf-8"))
-
-        let cart = {
-            idC: lastId + 1,
-            "products": []
-        }
-
-        lastId = cart.idC
-
-        carts.push(cart)
-
-        await fs.promises.writeFile(namefileCart, JSON.stringify(carts))
-
-        res.send({ status: "Success", msg: "Carrito creado correctamente. ID = " + cart.idC })
-
-
-    } catch (error) {
-        res.status(500).send({ status: "error", msg: "Error procesando la creacion del carrito." })
-        console.log(`Se presento un error en la creacion del carro. Detalles: ${error}`)
-    }
-})
-
-router.get('/:cId', MyMiddleWare, async (req, res) => {
-
-    try {
-
-        carts = JSON.parse(await fs.promises.readFile(namefileCart, "utf-8"))
-
-        if (!(carts.length >= 0)) {
-            res.send("El carrito se encuentra vacio.")
+        if (await manager.newCart()) {
+            res.send({ status: "Success", msg: "Carrito creado correctamente." })
         } else {
-            const cart = carts.find((c) => c.idC == req.params.cId)
-
-            res.send(cart.products)
+            res.send({ status: "Error", msg: "Error: No se pudo agregar Carrito!" })
         }
 
     } catch (error) {
-        console.log(`Se presento un error en el listado del contenido del carrito ID ${req.params.cId}. Detalles: ${error}`)
-        res.status(500).send(`Se presento un error en el listado del contenido del carrito ID ${req.params.cId}`)
+        res.status(500).send({ status: "error", msg: "Error procesando la creacion del Carrito." })
+        console.log(`CR - Se presento un error en la creacion del carro. Detalles: ${error}`)
     }
 })
 
-router.post('/:cId/product/:pId', async (req, res) => {
+// DEVUELVE LOS PRODUCTOS DE UN CARRITO
+
+router.get('/:cart_id', MyMiddleWare, async (req, res) => {
 
     try {
 
-        let products = JSON.parse(await fs.promises.readFile(namefileProducts, "utf-8"))
+        let products = await manager.getProductsByCartID(req.params.cart_id)
 
-        let productToAdd = products.find((p) => p.id == req.params.pId)
-
-
-        if (productToAdd) {
-
-            carts = JSON.parse(await fs.promises.readFile(namefileCart, "utf-8"))
-
-            let cart = carts.find((c) => c.idC == req.params.cId)
-            let cartIndex = carts.findIndex((c) => c.idC == req.params.cId)
-
-            if (!cart) {
-                res.send(`El carrito solicitado no existe, verifique los datos ingresados.`)
-                return;
-            }
-
-            let productInCartPosition = cart.products.findIndex((p) => p.idP == productToAdd.id)
-
-            if (productInCartPosition < 0) {
-                productToAdd = {
-                    idP: productToAdd.id,
-                    quantity: 1
-                }
-                cart.products.push(productToAdd)
-                carts[cartIndex] = cart
-                await fs.promises.writeFile(namefileCart, JSON.stringify(carts))
-                res.send({ status: "Success", msg: `Producto ID ${productToAdd.idP} agregado correctamente al carrito ID ${cart.idC}` })
-            } else {
-                cart.products[productInCartPosition].quantity++
-                carts[cartIndex] = cart
-                await fs.promises.writeFile(namefileCart, JSON.stringify(carts))
-                res.send({ status: "Success", msg: `Se agrego otro Producto ID ${cart.products[productInCartPosition].idP} al carrito correctamente. Hay ${cart.products[productInCartPosition].quantity} en total dentro del carrito` })
-            }
-
+        if (products) {
+            res.send(products)
         } else {
-            res.status(400).send(`El producto que intenta agregar no existe, por favor, verifique los datos.`)
+            res.send({
+                status: "Info",
+                msg: "El Carrito se encuentra vacio."
+            })
         }
 
     } catch (error) {
-        res.status(500).send({ status: "error", msg: "Error agregando un producto al carrito." })
-        console.log(`Se presento un error al intentar agregar un producto al carro. Detalles: ${error}`)
+        console.log(`CR - Se presento un error en el listado del contenido del Carrito con ID = ${req.params.cart_id}. Detalles: ${error}`)
+        res.status(500).send(`Se presento un error en el listado del contenido del Carrito con ID = ${req.params.cart_id}`)
     }
 })
 
-router.delete('/:cId/product/:pId', async (req, res) => {
+// DEVUELVE TODOS LOS CARRITOS Y SUS PRODUCTOS
+
+router.get('/', MyMiddleWare, async (req, res) => {
 
     try {
 
-        carts = JSON.parse(await fs.promises.readFile(namefileCart, "utf-8"))
+        let allCarts = await manager.getCarts()
 
-        let cart = carts.find((c) => c.idC == req.params.cId)
-        let cartIndex = carts.findIndex((c) => c.idC == req.params.cId)
-
-        if (!cart) {
-            res.send(`El carrito solicitado no existe, verifique los datos ingresados.`)
-            return;
-        }
-
-        let productInCartPosition = cart.products.findIndex((p) => p.idP == req.params.pId)
-
-        if (productInCartPosition < 0) {
-            res.status(400).send({ status: "error", msg: `No hay ningun Producto ID ${req.params.pId} en el carrito ID ${cart.idC}` })
+        if (allCarts) {
+            res.send(allCarts)
         } else {
-            if (cart.products[productInCartPosition].quantity != 1) {
-                cart.products[productInCartPosition] = {
-                    idP: cart.products[productInCartPosition].idP,
-                    quantity: cart.products[productInCartPosition].quantity - 1
-                }
-                carts[cartIndex] = cart
-                await fs.promises.writeFile(namefileCart, JSON.stringify(carts))
-                res.send({ status: "Success", msg: `Se elimino 1 Producto ID ${cart.products[productInCartPosition].idP} del carrito correctamente. Quedan ${cart.products[productInCartPosition].quantity} en total dentro del carrito` })
-            } else {
-                cart.products.splice(productInCartPosition, 1)
-                await fs.promises.writeFile(namefileCart, JSON.stringify(carts))
-                res.send({ status: "Success", msg: `Se elimino correctamente el Producto ID ${req.params.pId} del carrito correctamente. Quedan 0 ejemplares dentro del carrito` })
-            }
+            res.send({
+                status: "Info",
+                msg: "El listado de Carritos se encuentra vacio"
+            })
         }
 
     } catch (error) {
-        res.status(500).send({ status: "error", msg: "Error borrando un producto al carrito." })
-        console.log(`Se presento un error al intentar borrar un producto del carrito. Detalles: ${error}`)
+        console.log(`CR - Se presento un error en el listado de Carritos . Detalles: ${error}`)
+        res.status(500).send(`Se presento un error en el listado Carritos`)
     }
 })
 
-router.delete('/:cId', async (req, res) => {
+// AGREGA UN PRODUCTO AL CARRITO
+
+router.post('/:cart_id/product/:prod_id', async (req, res) => {
 
     try {
 
-        carts = JSON.parse(await fs.promises.readFile(namefileCart, "utf-8"))
+        switch (await manager.addProductInCart(req.params.cart_id, req.params.prod_id)) {
+            case 1:
+                res.send({ status: "Success", msg: `Producto ID ${req.params.prod_id} agregado correctamente al Carrito con ID = ${req.params.prod_id}` })
+                break;
+            case 2:
+                res.send({ status: "Success", msg: `Se agrego otro Producto ID ${req.params.prod_id} al Carrito correctamente.` })
+                break;
+            case 3:
+                res.send({ status: "Error", msg: `El Carrito solicitado no existe, verifique los datos ingresados.` })
+                break;
+            case 4:
+                res.send({ status: "Error", msg: `El Producto que intenta agregar no existe, por favor, verifique los datos.` })
+                break;
 
-        let cart = carts.find((c) => c.idC == req.params.cId)
-        let cartIndex = carts.findIndex((c) => c.idC == req.params.cId)
-
-        if (!cart) {
-            res.send(`El carrito solicitado no existe, verifique los datos ingresados.`)
-            return;
+            default:
+                res.status(500).send(`Error agregando Producto al Carrito.`)
+                break;
         }
 
-        carts.splice(cartIndex, 1)
-        await fs.promises.writeFile(namefileCart, JSON.stringify(carts))
-        res.send({ status: "Success", msg: `Se elimino correctamente el Carrito ID ${req.params.cId} de la lista de carritos` })
+    } catch (error) {
+        res.status(500).send({ status: "error", msg: "#CR - Error agregando un Producto al Carrito." })
+        console.log(`#CR - Se presento un error al intentar agregar un Producto al carro. Detalles: ${error}`)
+    }
+})
+
+// BORRAR UN PRODUCTO DE UN CARRITO
+
+router.delete('/:cart_id/product/:prod_id', async (req, res) => {
+
+    try {
+
+        switch (await manager.deleteProdInCartById(req.params.cart_id, req.params.prod_id)) {
+            case 1:
+                res.status(400).send({ status: "error", msg: `No hay ningun Producto con ID = ${req.params.prod_id} en el Carrito con ID = ${req.params.cart_id}` })
+                break;
+            case 2:
+                res.send({ status: "Success", msg: `Se elimino 1 Producto (id = ${req.params.prod_id}) del Carrito correctamente.` })
+                break;
+            case 3:
+                res.send({ status: "Success", msg: `Se elimino correctamente el Producto (id = ${req.params.prod_id}) del Carrito.` })
+                break;
+            case 4:
+                res.status(400).send({ status: "error", msg: `El Carrito solicitado no existe, verifique los datos ingresados.` })
+                break;
+            default:
+                res.status(500).send(`Error eliminando el Producto del Carrito.`)
+                break;
+        }
 
     } catch (error) {
-        res.status(500).send({ status: "error", msg: "Error agregando un producto al carrito." })
-        console.log(`Se presento un error al intentar agregar un producto al carro. Detalles: ${error}`)
+        res.status(500).send({ status: "error", msg: "Error borrando un Producto al Carrito." })
+        console.log(`Se presento un error al intentar borrar un Producto del Carrito. Detalles: ${error}`)
+    }
+})
+
+// BORRA TODOS LOS CARRITOS
+
+router.delete('/deleteAll', async (req, res) => {
+
+    try {
+        if (await manager.deleteAllCarts()) {
+            res.send({ status: "Success", msg: `Se eliminaron correctamente todos los Carritos de la lista de Carritos` })
+        } else {
+            res.status(500).send({ status: "Info", msg: "No hay carritos que elimnar. Listado vacio." })
+        }
+    } catch (error) {
+        res.status(500).send({ status: "Error", msg: "Error vaciando lista de Carritos." })
+    }
+})
+
+// BORRAR UN CARRITO
+
+router.delete('/:cart_id', async (req, res) => {
+
+    try {
+
+        if (await manager.deleteCartById(req.params.cart_id)) {
+            res.send({ status: "Success", msg: `Se elimino correctamente el Carrito con ID = ${req.params.cart_id} de la lista de Carritos` })
+        } else {
+            res.send({ status: "Error", msg: `No se pudo eliminar el Carrito debido a que este ya no existe.` })
+        }
+
+    } catch (error) {
+        res.status(500).send({ status: "error", msg: "Error eliminando el Carrito." })
+        console.log(`Se presento un error al intentar eliminar el carro. Detalles: ${error}`)
     }
 })
 

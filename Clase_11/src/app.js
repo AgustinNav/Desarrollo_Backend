@@ -26,9 +26,6 @@ const injectSocket = (req, res, next) => {
     const socketID = req.header("X-Socket-IO-ID");
     const socketIO = socketServer.of("/").sockets.get(socketID);
 
-    if (!socketIO)
-        console.warn("Some client does not have the X-Socket-IO-ID set!");
-
     req.socketIO = socketIO;
 
     next();
@@ -48,15 +45,7 @@ const socketServer = new Server(httpServer)
 
 // Abrimos el canal de comunicacions
 socketServer.on('connection', socket => {
-    console.log("Nuevo cliente conectado!");
 
-    const logs = []
-    socket.on('message2', data => {
-        logs.push({
-            socketid: socket.id,
-            message: data
-        })
-        socketServer.emit('log', { logs })
-    })
-
+    console.log("Cliente conectado. ID=", socket.id);
+    
 })

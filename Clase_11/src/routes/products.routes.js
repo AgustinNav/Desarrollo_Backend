@@ -41,8 +41,6 @@ router.get('/realtimeproducts', async (req, res) => {
             req.socketIO.emit("PoProducts", {
                 products: products
             })
-        } else {
-            console.log("El req.socketIO no existe");
         }
 
         res.render('realTimeProducts')

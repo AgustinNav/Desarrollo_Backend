@@ -22,7 +22,13 @@ socket.on('PoProducts', data => {
     let productos = '';
 
     data.products.forEach(prod => {
-        productos += `<li>ID: ${prod.id} | Titulo: ${prod.title} <br/>------- Codigo: ${prod.code} <br/>------- Precio: $${prod.price}</li>`
+        productos += `
+        <li>
+            ID: ${prod.id} | Titulo: ${prod.title} 
+            <br/>------- Codigo: ${prod.code} 
+            <br/>------- Precio: $${prod.price}
+        </li>
+        <br/>`
     });
 
     productsList.innerHTML = productos

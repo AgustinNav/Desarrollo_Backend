@@ -9,6 +9,7 @@ const app = express()
 const PORT = 8080
 
 // Prepara la configuracion del servidor para recibir objetos JSON.
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -35,18 +36,28 @@ const socketServer = new Server(httpServer)
 
 // Abrimos el canal de comunicacions
 socketServer.on('connection', socket => {
-
     console.log("Nuevo cliente conectado!");
 
     // Escuchamos al cliente
-    socketServer.on('message', data => {
-        console.log(data);
+    // socket.on('message1', data => {
+    //     console.log("Recibiendo texto:")
+    //     console.log(data)
+    //     socketServer.emit('log', data)
+    // })
+
+    const logs = []
+    socket.on('message2', data => {
+        logs.push({
+            socketid: socket.id,
+            message: data
+        })
+        socketServer.emit('log', {logs})
     })
 
-    socket.emit('message_2', 'Mensaje enviado desde el bakc!')
+    // socket.emit('msg_02', 'Mensaje enviado desde el back!')
 
-    socket.broadcast.emit("evento_para_todos_excepto_socket_actual", "Este evento es para todos los sockets, menos el socket desde que se emitio el mensaje!")
+    // socket.broadcast.emit("evento_para_todos_excepto_socket_actual", "Este evento es para todos los sockets, menos el socket desde que se emitio el mensaje!")
 
-    socket.emit("evento_para_todos", "Evento para todos los Sockets!")
+    // socketServer.emit("evento_para_todos", "Evento para todos los Sockets!")
 
 })

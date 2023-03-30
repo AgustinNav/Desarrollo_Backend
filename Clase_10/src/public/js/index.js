@@ -1,10 +1,10 @@
 // Configuracion del socket del lado del cliente
 const socket = io();
 
-socket.emit('message', 'Mensaje enviado desde el Cliente!')
+socket.emit('msg', 'Hola soy el cliente!')
 
-socket.on('message_2', data => {
-    console.log(data);
+socket.on('msg_02', data => {
+    console.log(data)
 })
 
 socket.on('evento_para_todos_excepto_socket_actual', data => {

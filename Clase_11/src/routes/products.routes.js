@@ -15,7 +15,8 @@ router.get('/', async (req, res) => {
         if (!(products.length > 0)) {
             res.send({
                 status: "Info",
-                msg: "El listado de productos se encuentra vacio."})
+                msg: "El listado de productos se encuentra vacio."
+            })
         } else {
             res.render('home', {
                 productos: products
@@ -34,9 +35,18 @@ router.get('/realtimeproducts', async (req, res) => {
     try {
         let products = await manager.getProducts()
 
-        res.render('realTimeProducts', {
-            productos: products
-        })
+        // verificar que el socket existe para que no truene el programa
+        // nota: también hay que validar que emit sea una función, solo por si acaso
+        if (req.socketIO && req.socketIO.emit) {
+            req.socketIO.emit("PoProducts", {
+                products: products
+            })
+        } else {
+            console.log("El req.socketIO no existe");
+        }
+
+        res.render('realTimeProducts')
+
     } catch (error) {
         console.log(error);
     }

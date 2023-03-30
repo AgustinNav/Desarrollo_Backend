@@ -21,10 +21,24 @@ app.set('view engine', 'handlebars')          // Extension de los archivos
 // Declaramos uso de archivos estaticos
 app.use(express.static(_dirname + "/public"))
 
+// Creamos un Middleware
+const injectSocket = (req, res, next) => {
+    const socketID = req.header("X-Socket-IO-ID");
+    const socketIO = socketServer.of("/").sockets.get(socketID);
+
+    if (!socketIO)
+        console.warn("Some client does not have the X-Socket-IO-ID set!");
+
+    req.socketIO = socketIO;
+
+    next();
+}
+
 // Declaramos los routers
 app.use('/api/carts', cartsRouter)
-app.use('/api/products', productsRouter)
+app.use('/api/products', injectSocket, productsRouter)
 
+// Dejamos activa la escucha en el puerto definido
 const httpServer = app.listen(PORT, () => {
     console.log("Servidor corriendo en el puerto: " + PORT);
 })
@@ -42,13 +56,7 @@ socketServer.on('connection', socket => {
             socketid: socket.id,
             message: data
         })
-        socketServer.emit('log', {logs})
+        socketServer.emit('log', { logs })
     })
-
-    // socket.emit('msg_02', 'Mensaje enviado desde el back!')
-
-    // socket.broadcast.emit("evento_para_todos_excepto_socket_actual", "Este evento es para todos los sockets, menos el socket desde que se emitio el mensaje!")
-
-    // socketServer.emit("evento_para_todos", "Evento para todos los Sockets!")
 
 })

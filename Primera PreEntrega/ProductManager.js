@@ -1,7 +1,7 @@
 import fs from 'fs'
-import _dirname from './utils.js'
+import _dirname from './src/utils.js'
 
-const FILEPATH = _dirname + "/src/files"
+const FILEPATH = _dirname + "/files"
 const NAMEFILE = FILEPATH + "/products.json"
 
 class ProductManager {

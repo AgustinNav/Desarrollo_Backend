@@ -1,8 +1,8 @@
 import fs from 'fs'
-import _dirname from './utils.js'
+import _dirname from './src/utils.js'
 import ProductManager from './ProductManager.js'
 
-const FILEPATH = _dirname + "/src/files"
+const FILEPATH = _dirname + "/files"
 const NAMEFILE = FILEPATH + "/carts.json"
 const prodManager = new ProductManager()
 

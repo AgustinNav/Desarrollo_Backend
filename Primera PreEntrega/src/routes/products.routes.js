@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import _dirname from '../../utils.js'
+import _dirname from '../utils.js'
 import ProductManager from '../../ProductManager.js'
 
 const router = Router()
@@ -17,12 +17,28 @@ router.get('/', async (req, res) => {
                 status: "Info",
                 msg: "El listado de productos se encuentra vacio."})
         } else {
-            res.send(products)
+            res.render('home', {
+                productos: products
+            })
         }
 
 
     } catch (error) {
         console.log(`Se presento un error en el listado total de productos. Detalles: ${error}`)
+    }
+})
+
+// Muestra los productos en tiempo real
+
+router.get('/realtimeproducts', async (req, res) => {
+    try {
+        let products = await manager.getProducts()
+
+        res.render('realTimeProducts', {
+            productos: products
+        })
+    } catch (error) {
+        console.log(error);
     }
 })
 
@@ -97,7 +113,7 @@ router.put('/:pId', async (req, res) => {
                     data: productUpdated
                 })
             } else {
-                return res.status(202).send({
+                res.status(202).send({
                     status: "Info",
                     error: "Producto no encontrado"
                 })
@@ -127,7 +143,7 @@ router.delete('/:pId', async (req, res) => {
             msg: `Producto con ID = ${productId} fue eliminado correctamente`
         })
     } else {
-        return res.status(400).send({
+        res.status(400).send({
             status: "Error",
             error: "El producto indicado no se pudo eliminar ya que este no existe"
         })

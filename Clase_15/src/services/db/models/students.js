@@ -13,15 +13,11 @@ const stringTypeSchemaNonUniqueRequired = {
     required: true
 };
 
-const arrayTypeSchemaNonUniqueRequired = {
-    type: Array,
-    required: true
-};
-
 const numberTypeSchemaNonUniqueRequired = {
     type: Number,
     required: true
 };
+
 
 // Implementar SCHEMAS para el Model de Mongoose
 
@@ -35,7 +31,16 @@ const studentSchema = new mongoose.Schema({
     name: stringTypeSchemaNonUniqueRequired,
     lastName: stringTypeSchemaNonUniqueRequired,
     age: numberTypeSchemaNonUniqueRequired,
-    courses: arrayTypeSchemaNonUniqueRequired  // [ids de los cursos asignados]
+    courses: {
+        type: [
+            {
+                course: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "courses"
+                }
+            }
+        ]
+    }  // [ids de los cursos asignados]
 })
 
 /**

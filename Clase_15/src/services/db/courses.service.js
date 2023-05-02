@@ -1,6 +1,9 @@
-import coursesModel from "./models/courses.model.js";
+import coursesModel from "./models/courses.js";
 
 export default class CourseService {
+    constructor() {
+        console.log("CourseService - Working courses with Database persistence in mongodb");
+    }
 
     getAll = async () => {
         try {

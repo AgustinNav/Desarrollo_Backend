@@ -15,6 +15,7 @@ const stringTypeSchemaNonUniqueRequired = {
 
 const arrayTypeSchemaNonUniqueRequired = {
     type: Array,
+    default: [],
     required: true
 };
 

@@ -1,6 +1,9 @@
-import studentsModel from "./models/students.model.js";
+import studentsModel from "./models/students.js";
 
 export default class StudentService {
+    constructor() {
+        console.log("StudentService - Working students with Database persistence in mongodb -");
+    }
 
     getAll = async () => {
         try {

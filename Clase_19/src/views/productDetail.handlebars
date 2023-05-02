@@ -1,0 +1,16 @@
+<div>
+    {{#each payload}}
+    <h1>Detalles de {{this.title}}</h1>
+    <li>| Id: {{this._id}} </li>
+    <li>--------------| Descripcion: {{this.description}}</li>
+    <li>--------------| Codigo: {{this.code}}</li>
+    <li>--------------| Categoria: {{this.category}}</li>
+    <li>--------------| Precio: ${{this.price}}</li>
+    <li>--------------| Stock: {{this.stock}}</li>
+    <br />
+    <form action="/api/carts/{{../cart_id}}/product/{{this._id}}" method="POST">
+        <input type="submit" value="Agregar al Carrito">
+    </form>
+    <br />
+    {{/each}}
+</div>

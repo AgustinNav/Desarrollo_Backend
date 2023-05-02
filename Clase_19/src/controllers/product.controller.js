@@ -41,6 +41,7 @@ export async function getProducts(req, res) {
         let newCart = await CartService.createCart()
 
         let response = {
+            user: req.session.user,
             status: xstatus,
             payload: docs,
             ...rest,

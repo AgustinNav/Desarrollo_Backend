@@ -1,4 +1,4 @@
-import express from 'express';
+    import express from 'express';
 import __dirname from './util.js';
 import handlebars from 'express-handlebars';
 
@@ -6,8 +6,9 @@ import mongoose from 'mongoose';
 import studentRouter from './routes/students.router.js'
 import coursesRouter from './routes/courses.router.js'
 import viewsRouter from "./routes/views.router.js";
-import studentsModel from './services/db/models/students.js';
-import coursesModel from './services/db/models/courses.js';
+import studentsModel from './services/db/models/students.model.js';
+import coursesModel from './services/db/models/courses.model.js';
+import userModel from './services/db/models/users.model.js'
 
 //Declarando Express para usar sus funciones.
 const app = express();
@@ -36,29 +37,59 @@ app.listen(9091, () => {
 
 const connectMongoDB = async ()=>{
     try {
-        await mongoose.connect('mongodb://localhost:27017/colegio?retryWrites=true&w=majority');
-        console.log("Conectado con exito a MongoDB usando Moongose.");
+        // await mongoose.connect('mongodb://localhost:27017/clase16_indexs_populate?retryWrites=true&w=majority');
+        // console.log("Conectado con exito a MongoDB usando Moongose. Base -> Clase16_indexs_populate");
 
-        /*let nuevoEstudiante = await studentsModel.create({
-            name: "Luis",
-            lastName : "Munar",
-            age : "20",
-        });*/
+        // // EXPLAIN - Nos dice la informacion del acceso a la base de datos, tiempos de demora, etc
+        // console.log("Busqueda por usuario: Agustin \n");
+        // let response = await userModel.find({first_name: "Agustin"}).explain('executionStats')
+        // console.log(response)
+        
+        // POPULATE
+        await mongoose.connect('mongodb://localhost:27017/colegio?retryWrites=true&w=majority')
+        console.log('Conexion a la base de datos establecida')
 
-        /*let nuevoCurso = await coursesModel.create(
-            {
-                title: "Curso Backend",
-                description: "Curso backend de NodeJS",
-                teacherName: "Juan Torres"
-            }
-        );*/
+        // // Creamos un Estudiante
 
-        let student = await studentsModel.findOne({_id: "640a705f72d18c48ca6f6741"});
-        console.log(JSON.stringify(student, null, '\t'));
-        //student.courses.push({course: "640a719de27c256369c70d15"});
-        //console.log(JSON.stringify(student));
-        //let result = await studentsModel.updateOne(student);
-        //console.log(result);
+        // let newStudents = await studentsModel.create({
+        //     first_name: "Agustin",
+        //     last_name: "Navarro",
+        //     age: 20
+        // })
+
+        // // Le añadimos la referencia a los cursos
+        
+        // let student = await studentsModel.findOne({_id: newStudents._id}).populate('courses')
+        // console.log(student);
+
+        // // Creamos el curso
+
+        // let newCourse = await coursesModel.create({
+        //     title: "Desarrollo Full Stack",
+        //     description: "Este curso esta bueno",
+        //     teacherName: "Marcelo Alleruzo"
+        // })
+
+        // let course = await coursesModel.findOne({_id: newCourse._id})
+        // console.log(course);
+
+        // // Generamos la referencia
+
+        let student = await studentsModel.findOne({_id:'643f233459e192ac43edc7da'})
+        console.log(JSON.stringify(student, null, '\t'));  // Ver el contenido del curso gracias al middleware del model students
+
+        // student.courses.push({course: "643f233459e192ac43edc7dd"})
+        // console.log(JSON.stringify(student, null, "\t"));
+        
+        // let result = await studentsModel.updateOne({_id:'643f233459e192ac43edc7da'}, student)
+        // console.log(result);
+
+
+        // let course = await coursesModel.findOne({_id: "643f233459e192ac43edc7dd"})
+        // course.students.push({student: "643f233459e192ac43edc7da"})
+        
+        // result = await coursesModel.updateOne({_id: "643f233459e192ac43edc7dd"}, course)
+        // console.log(result);
 
     } catch (error) {
         console.error("No se pudo conectar a la BD usando Moongose: " + error);

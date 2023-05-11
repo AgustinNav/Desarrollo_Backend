@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const _filename = fileURLToPath(import.meta.url);
 export const _dirname = dirname(_filename);
@@ -17,7 +18,7 @@ export const isValidPassword = (user, password) => {
 }
 
 // Utilizando Json Web Token (JWS)
-const PRIVATE_KEY = "ComoSonOneSombrasDualidadParticularEstaBomba"
+const PRIVATE_KEY = "ComoSonOneSombrasDualidadParticularEnEstaBomba"
 
 export const generateJWToken = (user) => {
     return jwt.sign({ user }, PRIVATE_KEY, { expiresIn: '24h' });

@@ -1,3 +1,6 @@
 node_modules
 .vscode/launch.json
 readme.RD
+.env.dev
+.env.prod
+config

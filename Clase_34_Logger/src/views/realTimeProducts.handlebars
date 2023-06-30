@@ -1,0 +1,48 @@
+{{#if isValid}}
+<div>
+    <h1>Listado de productos:</h1>
+
+    {{#each payload}}
+    {{#if this.status}}
+
+    <li>| Id: {{this._id}} </li>
+    <li>--------------| Titulo: {{this.title}}</li>
+    <li>--------------| Codigo: {{this.code}}</li>
+    <li>--------------| Categoria: {{this.category}}</li>
+    <li>--------------| Precio: ${{this.price}}</li>
+    <li>--------------| Stock: {{this.stock}}</li>
+    || <a href="http://localhost:8080/api/products/{{this._id}}">Ver detalles</a> ||<br />
+    <form action="/api/carts/{{../cart_id}}/product/{{this._id}}" method="POST">
+        <input type="submit" value="Agregar al Carrito">
+    </form>
+    <br />
+    {{else}}
+    <li>
+        | Id: {{this._id}} |
+        <br />--------------------| Titulo: {{this.title}}
+        <br />--------------------| Codigo: {{this.code}}
+        <br />--------------------| Categoria: {{this.category}}
+        <br />--------------------| PUBLICACION CONGELADA
+        <br />|| <a href="http://localhost:8080/api/products/{{this._id}}">Ver detalles</a> ||<br />
+    </li>
+    <br />
+    {{/if}}
+    {{/each}}
+</div>
+<br />
+<div>
+    {{#if hasPrevPage}}
+    <a href={{this.prevLink}}>
+        << Anterior</a>
+            {{/if}}
+            &nbsp;
+            {{this.page}}
+            &nbsp;
+            {{#if hasNextPage}}
+            <a href={{this.nextLink}}>Siguiente >></a>
+            {{/if}}
+</div>
+{{else}}
+<h1>No productos para mostrar</h1>
+{{/if}}
+
